@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from math import ceil
 from selenium import webdriver
-
+from case import Case
 
 
 def getCases():
@@ -18,7 +18,8 @@ def getCases():
     cases_html = []
 
     for i in range(ceil(total_amount / 10)):
-        browser = webdriver.PhantomJS()
+        browser = webdriver.Chrome()
+        # browser = webdriver.PhantomJS()
         browser.get(
             'https://steamcommunity.com/market/search?appid=730&q=container+case#p{}_quantity_asc'.format(i+1))
         page = browser.page_source
@@ -43,12 +44,12 @@ def getBestInvestments(cases, count=5):
     # Sort by amount on market (ASC)
     cases.sort(key=lambda x: x.amount)
     for case in cases:
-        if case.price == 0.03:
+        if case.get_price == 0.03:
             result.append(case)
         if len(result) == count:
             break
     for case in cases:
-        if case.price == 0.04:
+        if case.get_price == 0.04:
             result.append(case)
         if len(result) == count:
             break
@@ -60,19 +61,8 @@ def printBestInvestments(cases, count=5):
         print("{}. {}".format(i + 1, case))
 
 
-class Case:
-    def __init__(self, name, amount, price):
-        self.name = name
-        self.amount = amount
-        self.price = price
-
-    def __repr__(self):
-        return "Case(Name: {}, Amount: {}, Price: {})".format(self.name, self.amount, self.price)
-
-    def __str__(self):
-        return "{} (Amount: {}): {}$".format(self.name, self.amount, self.price)
-
-
 if __name__ == "__main__":
     cases = getCases()
+    print(cases)
+    printBestInvestments(cases)
     
