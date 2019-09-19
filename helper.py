@@ -1,71 +1,56 @@
 import utils
 import requests
-from bs4 import BeautifulSoup
 from math import ceil
-from selenium import webdriver
 from case import Case
-import time
+import json
 
 
 def getCases():
-    page = requests.get(
-        'https://steamcommunity.com/market/search?appid=730&q=container+case')
-
-    soup = BeautifulSoup(page.text, 'html.parser')
-    total_amount = int(
-        soup.find("span", attrs={'id': 'searchResults_total'}).text)
-
     cases = []
-    cases_html = []
+    res = requests.get(
+        'https://steamcommunity.com/market/search/render/?query=container+case&sort_column=default&sort_dir=desc&appid=730&norender=1&count=100')
+    results = json.loads(res.text)
+    if results["success"] == "false":
+        raise Exception("Something went wrong")
+    for case in results["results"]:
 
-    for i in range(ceil(total_amount / 10)):
-        browser = webdriver.Chrome()
-        # browser = webdriver.PhantomJS()
-        browser.get(
-            'https://steamcommunity.com/market/search?appid=730&q=container+case#p{}_quantity_asc'.format(i+1))
-        time.sleep(0.2)
-        page = browser.page_source
-        browser.close()
-
-        soup = BeautifulSoup(page, 'html.parser')
-        cases_html = soup.findAll("div", attrs={'class': 'market_listing_row market_recent_listing_row market_listing_searchresult'})
-    
-        for case_html in cases_html:
-            soup = case_html
-            case = Case(soup.find("span", attrs={'class': 'market_listing_item_name'}).text,
-                        int(soup.find("span", attrs={
-                            "class": "market_listing_num_listings_qty"}).text.replace(",", "")),
-                        float(soup.findAll("span", attrs={"class": "normal_price"})[1].text.replace(" ", "").replace("$", "").replace("USD", "").replace(",", ".")))
-            cases.append(case)
-            print(case)
+        cases.append(Case(case["name"], case["sell_listings"], case["sell_price"]/100))
     return cases
 
 
-def getBestInvestments(cases, count=5):
-    result = []
-    
+def getInvestmentIndex(case):
+    return 1
+
+
+def getBestInvestments(cases, count=5):    
     # Sort by amount on market (ASC)
-    cases.sort(key=lambda x: x.amount)
-    for case in cases:
-        if case.get_price() == 0.03:
-            result.append(case)
-        if len(result) == count:
-            break
-    for case in cases:
-        if case.get_price() == 0.04:
-            result.append(case)
-        if len(result) == count:
-            break
-    return result
+    cases.sort(key=lambda x: x.get_amount())
+    cases.sort(key=lambda x: x.get_price())
+    return cases[0:count]
 
 
-def printBestInvestments(cases, count=5):
+def getBestInvestmentIndex(cases, count=5):
+    cases.sort(key=lambda x: getInvestmentIndex(x))
+    return cases[0:count]
+
+
+def printBestInvestments(cases, count=5): 
+    print("\n" + "-" * 50)
+    print("Best case investments: \n")
     for i, case in enumerate(getBestInvestments(cases, count)):
         print("{}. {}".format(i + 1, case))
+    print("-" * 50, "\n", sep="")
+
+
+def printBestInvestmentIndex(cases, count=5): 
+    print("\n" + "-" * 50)
+    print("Best case investments: \n")
+    for i, case in enumerate(getBestInvestmentIndex(cases, count)):
+        print("{}. {}".format(i + 1, case))
+    print("-" * 50, "\n", sep="")
 
 
 if __name__ == "__main__":
     cases = getCases()
-    # print(cases)
-    printBestInvestments(cases)
-    
+    printBestInvestments(cases, 10)
+    printBestInvestmentIndex(cases, 10)

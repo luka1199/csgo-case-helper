@@ -17,4 +17,5 @@ class Case:
 		return "Case(Name: {}, Amount: {}, Price: {})".format(self.name, self.amount, self.price)
 
 	def __str__(self):
- 		return "Case(Name: {}, Amount: {}, Price: {})".format(self.name, self.amount, self.price)
+
+ 		return "{} ({}) -> {}$".format(self.name, self.amount, self.price)
