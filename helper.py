@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from math import ceil
 from selenium import webdriver
 from case import Case
+import time
 
 
 def getCases():
@@ -22,6 +23,7 @@ def getCases():
         # browser = webdriver.PhantomJS()
         browser.get(
             'https://steamcommunity.com/market/search?appid=730&q=container+case#p{}_quantity_asc'.format(i+1))
+        time.sleep(0.2)
         page = browser.page_source
         browser.close()
 
@@ -35,6 +37,7 @@ def getCases():
                             "class": "market_listing_num_listings_qty"}).text.replace(",", "")),
                         float(soup.findAll("span", attrs={"class": "normal_price"})[1].text.replace(" ", "").replace("$", "").replace("USD", "").replace(",", ".")))
             cases.append(case)
+            print(case)
     return cases
 
 
@@ -44,12 +47,12 @@ def getBestInvestments(cases, count=5):
     # Sort by amount on market (ASC)
     cases.sort(key=lambda x: x.amount)
     for case in cases:
-        if case.get_price == 0.03:
+        if case.get_price() == 0.03:
             result.append(case)
         if len(result) == count:
             break
     for case in cases:
-        if case.get_price == 0.04:
+        if case.get_price() == 0.04:
             result.append(case)
         if len(result) == count:
             break
@@ -63,6 +66,6 @@ def printBestInvestments(cases, count=5):
 
 if __name__ == "__main__":
     cases = getCases()
-    print(cases)
+    # print(cases)
     printBestInvestments(cases)
     
