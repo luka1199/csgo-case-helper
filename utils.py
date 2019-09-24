@@ -24,8 +24,10 @@ def getTotalFeeFromPrice(price):
 def getTotalFeeFromPayout(payout):
     steam_transaction_fee = math.floor((payout * STEAM_FEE) * 100) / 100
     csgo_transaction_fee = math.floor((payout * CSGO_FEE) * 100) / 100
-    if steam_transaction_fee == 0: steam_transaction_fee = 0.01
-    if csgo_transaction_fee == 0: csgo_transaction_fee = 0.01
+    if steam_transaction_fee == 0:
+        steam_transaction_fee = 0.01
+    if csgo_transaction_fee == 0:
+        csgo_transaction_fee = 0.01
     return steam_transaction_fee + csgo_transaction_fee
 
 
@@ -44,7 +46,6 @@ def test():
         payout = round(random() * 500, 2)
         print("Payout:", payout, "--> Price:", getPriceFromPayout(payout))
 
-
     print("\nTesting Price --> Payout")
     for i in range(10):
         price = round(random() * 500, 2)
@@ -53,5 +54,7 @@ def test():
     print("Payout:", "0.01", "--> Price:", getPriceFromPayout(0.01))
     print("Price:", "0.03", "--> Payout:", getPayoutFromPrice(0.03))
 
+
 if __name__ == "__main__":
-    print(getProfit(0.03, 811, 0.5))
+    # print(getProfit(0.03, 811, 0.39))
+    pass
