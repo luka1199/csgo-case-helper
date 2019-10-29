@@ -24,7 +24,10 @@ def getInventory(steamid):
     data = requests.get(
         "https://steamcommunity.com/id/{}/inventory/json/730/2?l=english&count=5000".format(steamid))
     json_data = json.loads(data.text)
-    descriptions = json_data["rgDescriptions"]
+    try:
+        descriptions = json_data["rgDescriptions"]
+    except:
+        return None
     inventory = {}
     for item in descriptions:
         inventory[descriptions[item]["name"]] = getItemAmount(descriptions[item]["classid"], json_data)
@@ -42,11 +45,14 @@ def getItemAmount(classid, json_data):
 
 def printInventory(steamid):
     inventory = getInventory(steamid)
-    print("\n" + "-" * 50)
-    print("CS:GO Inventory of {}: \n".format(steamid))
-    for name, amount in inventory.items():
-        print("  ", name, " ({})".format(amount), sep="")
-    print("-" * 50, "\n", sep="")
+    if inventory is None:
+        print("Error: Can't get inventory of {}.".format(steamid))
+    else:
+        print("\n" + "-" * 50)
+        print("CS:GO Inventory of {}: \n".format(steamid))
+        for name, amount in inventory.items():
+            print("  ", name, " ({})".format(amount), sep="")
+        print("-" * 50, "\n", sep="")
 
 
 def getBestInvestments(cases, count=5):    
@@ -66,6 +72,5 @@ def printBestInvestments(cases, count=5):
 
 if __name__ == "__main__":
     cases = getCases()
-    # printBestInvestments(cases, 10)
-    # printBestInvestmentIndex(cases, 10)
+    printBestInvestments(cases, 10)
     printInventory(STEAMID)
