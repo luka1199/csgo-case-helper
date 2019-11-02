@@ -3,8 +3,7 @@ import requests
 from math import ceil
 from case import Case
 import json
-
-STEAMID = "luka111599"
+import sys
 
 class Helper:
     def __init__(self):
@@ -117,5 +116,14 @@ class Helper:
 
 if __name__ == "__main__":
     helper = Helper()
-    helper.printInventory(STEAMID)
-    helper.printBestInvestments()
+    
+    if len(sys.argv) == 1:
+        helper.printBestInvestments()
+
+    if len(sys.argv) == 2:
+        if sys.argv[1] == "help":
+            print("Usage: python helper.py [<steamid> or help]")
+            sys.exit()
+        else:
+            helper.printInventory(sys.argv[1])
+
