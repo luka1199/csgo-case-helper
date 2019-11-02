@@ -39,7 +39,7 @@ def getProfit(buyPrice, units, sellPrice):
 
 def test():
     """
-    This function shows test values for the provided functions to compare with the steam market
+    Shows test values for the provided functions to compare with the steam market.
     """
     print("\nTesting Payout --> Price")
     for i in range(10):
