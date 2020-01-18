@@ -4,6 +4,7 @@ from math import ceil
 from case import Case
 import json
 import sys
+import time
 
 class Helper:
     def __init__(self):
@@ -17,13 +18,32 @@ class Helper:
         """
         cases = []
         res = requests.get(
-            'https://steamcommunity.com/market/search/render/?query=container+case&sort_column=default&sort_dir=desc&appid=730&norender=1&count=100')
+            "https://steamcommunity.com/market/search/render/?query=container+case&sort_column=default&sort_dir=desc&appid=730&norender=1&count=100")
         results = json.loads(res.text)
         if results["success"] == "false":
             raise Exception("Something went wrong")
         for case in results["results"]:
             cases.append(Case(case["name"], case["sell_listings"], case["sell_price"]/100))
         return cases
+    
+    def getItemPrice(self, name):
+        """Returns the steam market price of the given item.
+
+        Returns:
+            float -- The price of the item.
+        """
+        res = requests.get(
+            "https://steamcommunity.com/market/search/render/?query={}&sort_column=default&appid=730&norender=1&count=100".format(
+                name
+            ))
+        results = json.loads(res.text)
+
+        if results["success"] == "false":
+            raise Exception("Something went wrong")
+        price = 0
+        if len(results["results"]) > 0:
+            price = results["results"][0]["sell_price"]/100
+        return price
 
 
     def getInventory(self, steamid):
@@ -44,7 +64,7 @@ class Helper:
             return None
         inventory = {}
         for item in descriptions:
-            inventory[descriptions[item]["name"]] = self.getItemAmount(descriptions[item]["classid"], json_data)
+            inventory[descriptions[item]["market_name"]] = self.getItemAmount(descriptions[item]["classid"], json_data)
         return inventory
 
 
@@ -78,7 +98,9 @@ class Helper:
             print("\n" + "-" * 50)
             print("CS:GO Inventory of {}: \n".format(steamid))
             for name, amount in inventory.items():
-                print("  ", name, " ({})".format(amount), sep="")
+                print("  ", name, " ({}) -> {}$".format(amount, self.getItemPrice(name)*amount), sep="")
+                # 69 requests per minute allowed
+                # time.sleep(1)
             print("-" * 50, "\n", sep="")
 
 
@@ -118,7 +140,8 @@ if __name__ == "__main__":
     helper = Helper()
     
     if len(sys.argv) == 1:
-        helper.printBestInvestments()
+        # helper.printBestInvestments()
+        print(helper.getItemPrice("P250 | Boreal Forest (Field-Tested)"))
 
     if len(sys.argv) == 2:
         if sys.argv[1] == "help":
