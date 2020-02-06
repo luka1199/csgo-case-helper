@@ -83,7 +83,7 @@ def getProfit(buyPrice, units, sellPrice):
     """
     investment = buyPrice * units
     profit = units * getPayoutFromPrice(sellPrice) - investment
-    return profit
+    return round(profit, 2)
 
 
 def test():
@@ -105,5 +105,4 @@ def test():
 
 
 if __name__ == "__main__":
-    # print(getProfit(0.03, 811, 0.39))
-    pass
+    print(getProfit(0.03, 836, 0.29))

@@ -140,8 +140,8 @@ if __name__ == "__main__":
     helper = Helper()
     
     if len(sys.argv) == 1:
-        # helper.printBestInvestments()
-        print(helper.getItemPrice("P250 | Boreal Forest (Field-Tested)"))
+        helper.printBestInvestments(count=10)
+        # print(helper.getItemPrice("P250 | Boreal Forest (Field-Tested)"))
 
     if len(sys.argv) == 2:
         if sys.argv[1] == "help":
