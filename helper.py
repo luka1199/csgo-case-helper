@@ -38,7 +38,7 @@ class Helper:
             ))
         results = json.loads(res.text)
 
-        if results["success"] == "false":
+        if results is None or results["success"] == "false":
             raise Exception("Something went wrong")
         price = 0
         if len(results["results"]) > 0:
@@ -99,8 +99,8 @@ class Helper:
             print("CS:GO Inventory of {}: \n".format(steamid))
             for name, amount in inventory.items():
                 print("  ", name, " ({}) -> {}$".format(amount, self.getItemPrice(name)*amount), sep="")
-                # 69 requests per minute allowed
-                # time.sleep(1)
+                # 20 requests per minute allowed
+                time.sleep(3)
             print("-" * 50, "\n", sep="")
 
 
