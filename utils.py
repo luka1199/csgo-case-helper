@@ -105,4 +105,16 @@ def test():
 
 
 if __name__ == "__main__":
-    print(getProfit(0.03, 836, 0.29))
+    import matplotlib.pyplot as plt
+
+    xvals = []
+    yvals = []
+    for i in range(0, 40):
+        price = i / 10
+        xvals.append(price)
+        yvals.append(getProfit(0.03, 836, price))
+
+    plt.plot(xvals, yvals)
+    plt.xlabel('Sell price')
+    plt.ylabel('Profit')
+    plt.show()
